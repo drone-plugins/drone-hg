@@ -25,7 +25,13 @@ bb.password = %s
 type Params struct {
 }
 
+var (
+	buildDate string
+)
+
 func main() {
+	fmt.Printf("Drone Mercurial Plugin built at %s\n", buildDate)
+
 	v := new(Params)
 	r := new(plugin.Repo)
 	b := new(plugin.Build)
