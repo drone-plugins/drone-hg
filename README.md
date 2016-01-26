@@ -2,7 +2,7 @@
 
 [![Build Status](http://beta.drone.io/api/badges/drone-plugins/drone-hg/status.svg)](http://beta.drone.io/drone-plugins/drone-hg)
 [![Coverage Status](https://aircover.co/badges/drone-plugins/drone-hg/coverage.svg)](https://aircover.co/drone-plugins/drone-hg)
-[![Code Coverage](https://aircover.co/badges/drone-plugins/drone-hg/coverage.svg)](https://aircover.co/drone-plugins/drone-hg)
+[![](https://badge.imagelayers.io/plugins/drone-hg:latest.svg)](https://imagelayers.io/?images=plugins/drone-hg:latest 'Get your own badge on imagelayers.io')
 
 Drone plugin to clone `mercurial` repositories
 
