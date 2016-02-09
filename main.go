@@ -15,9 +15,9 @@ import (
 
 var hgrcFile = `
 [auth]
-bb.prefix = https://bitbucket.org
-bb.username = %s
-bb.password = %s
+drone.prefix = %s
+drone.username = %s
+drone.password = %s
 `
 
 // Params stores the git clone parameters used to
@@ -65,7 +65,10 @@ func run(r *plugin.Repo, b *plugin.Build, w *plugin.Workspace, v *Params) error 
 	}
 
 	var cmds []*exec.Cmd
-	cmds = append(cmds, clone(b))
+	if isDirEmpty(filepath.Join(w.Path, ".hg")) {
+		cmds = append(cmds, initHg())
+	}
+	cmds = append(cmds, pull(r, b))
 	cmds = append(cmds, update(b))
 
 	for _, cmd := range cmds {
@@ -82,12 +85,21 @@ func run(r *plugin.Repo, b *plugin.Build, w *plugin.Workspace, v *Params) error 
 	return nil
 }
 
-func clone(b *plugin.Build) *exec.Cmd {
+func initHg() *exec.Cmd {
 	return exec.Command(
 		"hg",
-		"clone",
+		"init",
+		".",
+	)
+}
+
+func pull(r *plugin.Repo, b *plugin.Build) *exec.Cmd {
+	return exec.Command(
+		"hg",
+		"pull",
 		"--branch",
 		b.Branch,
+		r.Clone,
 	)
 }
 
