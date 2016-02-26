@@ -4,7 +4,7 @@
 [![Coverage Status](https://aircover.co/badges/drone-plugins/drone-hg/coverage.svg)](https://aircover.co/drone-plugins/drone-hg)
 [![](https://badge.imagelayers.io/plugins/drone-hg:latest.svg)](https://imagelayers.io/?images=plugins/drone-hg:latest 'Get your own badge on imagelayers.io')
 
-Drone plugin to clone `mercurial` repositories
+Drone plugin to clone `mercurial` repositories. For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
 
 ## Overview
 
