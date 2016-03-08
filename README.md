@@ -26,7 +26,7 @@ make deps build
 ./drone-hg <<EOF
 {
     "repo": {
-        "clone": "https://drone@bitbucket.org/drone/drone"
+        "clone_url": "https://drone@bitbucket.org/drone/drone"
     },
     "build": {
         # FIXME: How does it look with hg?
@@ -49,7 +49,7 @@ EOF
 ./drone-hg <<EOF
 {
     "repo": {
-        "clone": "https://drone@bitbucket.org/drone/drone"
+        "clone_url": "https://drone@bitbucket.org/drone/drone"
     },
     "build": {
         # FIXME: How does it look with hg?
@@ -72,7 +72,7 @@ EOF
 ./drone-hg <<EOF
 {
     "repo": {
-        "clone": "https://drone@bitbucket.org/drone/drone"
+        "clone_url": "https://drone@bitbucket.org/drone/drone"
     },
     "build": {
         # FIXME: How does it look with hg?
@@ -103,7 +103,7 @@ make deps docker
 docker run -i plugins/drone-hg <<EOF
 {
     "repo": {
-        "clone": "https://drone@bitbucket.org/drone/drone"
+        "clone_url": "https://drone@bitbucket.org/drone/drone"
     },
     "build": {
         # FIXME: How does it look with hg?
@@ -126,7 +126,7 @@ EOF
 docker run -i plugins/drone-hg <<EOF
 {
     "repo": {
-        "clone": "https://drone@bitbucket.org/drone/drone"
+        "clone_url": "https://drone@bitbucket.org/drone/drone"
     },
     "build": {
         # FIXME: How does it look with hg?
@@ -149,7 +149,7 @@ EOF
 docker run -i plugins/drone-hg <<EOF
 {
     "repo": {
-        "clone": "https://drone@bitbucket.org/drone/drone"
+        "clone_url": "https://drone@bitbucket.org/drone/drone"
     },
     "build": {
         # FIXME: How does it look with hg?
