@@ -18,6 +18,7 @@ var hgrcFile = `
 drone.prefix = %s
 drone.username = %s
 drone.password = %s
+drone.schemes = http https
 `
 
 // Params stores the git clone parameters used to
@@ -128,12 +129,13 @@ func writeHgrc(in *plugin.Workspace) error {
 		in.Netrc.Login,
 		in.Netrc.Password,
 	)
-	home := "/root/.hg"
+	home := "/root"
 	u, err := user.Current()
 	if err == nil {
 		home = u.HomeDir
 	}
-	path := filepath.Join(home, "hgrc")
+
+	path := filepath.Join(home, ".hgrc")
 	return ioutil.WriteFile(path, []byte(out), 0600)
 }
 
