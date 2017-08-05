@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "TUGsLZWNrD5JGFRWdIXYR7o2U7s=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "3eef8ce63d02f65d2da43214faf7bb19b0b2bb7a",
+			"revisionTime": "2017-07-22T11:39:13Z"
+		},
+		{
+			"checksumSHA1": "9LeR7BH4PSu8LRDZ8bY7QY1HXJE=",
+			"path": "github.com/urfave/cli",
+			"revision": "4b90d79a682b4bf685762c7452db20f2a676ecb2",
+			"revisionTime": "2017-07-06T19:46:25Z"
+		}
+	],
+	"rootPath": "github.com/drone-plugins/drone-hg"
+}
