@@ -18,13 +18,3 @@ pipeline:
     when:
       branch: master
       event: push
-
-plugin:
-  name: Mercurial
-  desc: Clones a mercurial repository
-  type: clone
-  image: plugins/drone-hg
-  labels:
-    - scm
-    - vcs
-    - hg
