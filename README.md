@@ -6,162 +6,44 @@
 
 Drone plugin to clone `mercurial` repositories. For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
 
-## Overview
-
 This plugin is responsible for cloning `mercurial` repositories. It is capable
 of cloning a specific commit, branch, tag or pull request. The clone path is
 provided in the `dir` field.
 
-## Binary
+## Build
 
-Build the binary using `make`:
+Build the binary with the following commands:
 
 ```
-make deps build
+go build
+go test
 ```
-
-### Clone a commit
-
-```sh
-./drone-hg <<EOF
-{
-    "repo": {
-        "clone_url": "https://drone@bitbucket.org/drone/drone"
-    },
-    "build": {
-        # FIXME: How does it look with hg?
-        "event": "push",
-        "branch": "master",
-        "commit": "436b7a6e2abaddfd35740527353e78a227ddcb2c",
-        "ref": "refs/heads/master"
-    },
-    "workspace": {
-        "root": "/drone/src",
-        "path": "/drone/src/bitbucket.org/drone/drone"
-    }
-}
-EOF
-```
-
-### Clone a pull request
-
-```sh
-./drone-hg <<EOF
-{
-    "repo": {
-        "clone_url": "https://drone@bitbucket.org/drone/drone"
-    },
-    "build": {
-        # FIXME: How does it look with hg?
-        "event": "pull_request",
-        "branch": "master",
-        "commit": "8d6a233744a5dcacbf2605d4592a4bfe8b37320d",
-        "ref": "refs/pull/892/merge"
-    },
-    "workspace": {
-        "root": "/drone/src",
-        "path": "/drone/src/bitbucket.org/drone/drone"
-    }
-}
-EOF
-```
-
-### Clone a tag
-
-```sh
-./drone-hg <<EOF
-{
-    "repo": {
-        "clone_url": "https://drone@bitbucket.org/drone/drone"
-    },
-    "build": {
-        # FIXME: How does it look with hg?
-        "event": "tag",
-        "branch": "master",
-        "commit": "339fb92b9629f63c0e88016fffb865e3e1055483",
-        "ref": "refs/tags/v0.2.0"
-    },
-    "workspace": {
-        "root": "/drone/src",
-        "path": "/drone/src/bitbucket.org/drone/drone"
-    }
-}
-EOF
-```
-
 ## Docker
 
-Build the container using `make`:
+Build the docker image with the following commands:
 
 ```
-make deps docker
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
+docker build --rm=true -t plugins/hg .
 ```
 
-### Clone a commit
+Please note incorrectly building the image for the correct x64 linux and with
+GCO disabled will result in an error when running the Docker image:
 
-```sh
-docker run -i plugins/drone-hg <<EOF
-{
-    "repo": {
-        "clone_url": "https://drone@bitbucket.org/drone/drone"
-    },
-    "build": {
-        # FIXME: How does it look with hg?
-        "event": "push",
-        "branch": "master",
-        "commit": "436b7a6e2abaddfd35740527353e78a227ddcb2c",
-        "ref": "refs/heads/master"
-    },
-    "workspace": {
-        "root": "/drone/src",
-        "path": "/drone/src/bitbucket.org/drone/drone"
-    }
-}
-EOF
+```
+docker: Error response from daemon: Container command
+'/bin/drone-hg' not found or does not exist..
 ```
 
-### Clone a pull request
+## Usage
 
-```sh
-docker run -i plugins/drone-hg <<EOF
-{
-    "repo": {
-        "clone_url": "https://drone@bitbucket.org/drone/drone"
-    },
-    "build": {
-        # FIXME: How does it look with hg?
-        "event": "pull_request",
-        "branch": "master",
-        "commit": "8d6a233744a5dcacbf2605d4592a4bfe8b37320d",
-        "ref": "refs/pull/892/merge"
-    },
-    "workspace": {
-        "root": "/drone/src",
-        "path": "/drone/src/bitbucket.org/drone/drone"
-    }
-}
-EOF
+Clone a commit:
+
 ```
-
-### Clone a tag
-
-```sh
-docker run -i plugins/drone-hg <<EOF
-{
-    "repo": {
-        "clone_url": "https://drone@bitbucket.org/drone/drone"
-    },
-    "build": {
-        # FIXME: How does it look with hg?
-        "event": "tag",
-        "branch": "master",
-        "commit": "339fb92b9629f63c0e88016fffb865e3e1055483",
-        "ref": "refs/tags/v0.2.0"
-    },
-    "workspace": {
-        "root": "/drone/src",
-        "path": "/drone/src/bitbucket.org/drone/drone"
-    }
-}
-EOF
+docker run --rm \
+  -e DRONE_REMOTE_URL=https://bitbucket.org/cedk/drone-hg-test \
+  -e DRONE_WORKSPACE=/go/src/bitbucket.org/cedk/drone-hg-test \
+  -e DRONE_BUILD_EVENT=push \
+  -e DRONE_COMMIT_SHA=37526193d0139f188b20e5c8bed8fc0640c38627 \
+  plugins/hg
 ```

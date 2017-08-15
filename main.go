@@ -2,153 +2,80 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"os"
-	"os/exec"
-	"os/user"
-	"path/filepath"
-	"strings"
 
-	"github.com/drone/drone-plugin-go/plugin"
+	"github.com/Sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
-var hgrcFile = `
-[auth]
-drone.prefix = %s
-drone.username = %s
-drone.password = %s
-drone.schemes = http https
-`
-
-// Params stores the git clone parameters used to
-// configure and customzie the git clone behavior.
-type Params struct {
-}
-
-var (
-	buildCommit string
-)
+var build = "0" // build number set at compile-time
 
 func main() {
-	fmt.Printf("Drone Mercurial Plugin built from %s\n", buildCommit)
+	app := cli.NewApp()
+	app.Name = "mercurial plugin"
+	app.Usage = "mercurial plugin"
+	app.Action = run
+	app.Version = fmt.Sprintf("1.0.%s", build)
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:   "remote",
+			Usage:  "hg remote url",
+			EnvVar: "DRONE_REMOTE_URL",
+		},
+		cli.StringFlag{
+			Name:   "path",
+			Usage:  "hg clone path",
+			EnvVar: "DRONE_WORKSPACE",
+		},
+		cli.StringFlag{
+			Name:   "sha",
+			Usage:  "hg commit rev",
+			EnvVar: "DRONE_COMMIT_SHA",
+		},
+		cli.StringFlag{
+			Name:   "event",
+			Value:  "push",
+			Usage:  "build event",
+			EnvVar: "DRONE_BUILD_EVENT",
+		},
+		cli.StringFlag{
+			Name:   "netrc.machine",
+			Usage:  "netrc machine",
+			EnvVar: "DRONE_NETRC_MACHINE",
+		},
+		cli.StringFlag{
+			Name:   "netrc.username",
+			Usage:  "netrc username",
+			EnvVar: "DRONE_NETRC_USERNAME",
+		},
+		cli.StringFlag{
+			Name:   "netrc.password",
+			Usage:  "netrc password",
+			EnvVar: "DRONE_NETRC_PASSWORD",
+		},
+	}
 
-	v := new(Params)
-	r := new(plugin.Repo)
-	b := new(plugin.Build)
-	w := new(plugin.Workspace)
-	plugin.Param("repo", r)
-	plugin.Param("build", b)
-	plugin.Param("workspace", w)
-	plugin.Param("vargs", &v)
-	plugin.MustParse()
-
-	err := run(r, b, w, v)
-	if err != nil {
-		os.Exit(1)
+	if err := app.Run(os.Args); err != nil {
+		logrus.Fatal(err)
 	}
 }
 
-// run clones the repository and build revision
-// into the build workspace.
-func run(r *plugin.Repo, b *plugin.Build, w *plugin.Workspace, v *Params) error {
-
-	err := os.MkdirAll(w.Path, 0777)
-	if err != nil {
-		fmt.Printf("Error creating directory %s. %s\n", w.Path, err)
-		return err
+func run(c *cli.Context) error {
+	plugin := Plugin{
+		Repo: Repo{
+			Clone: c.String("remote"),
+		},
+		Build: Build{
+			Path:   c.String("path"),
+			Event:  c.String("event"),
+			Commit: c.String("sha"),
+		},
+		Netrc: Netrc{
+			Machine:  c.String("netrc.machine"),
+			Login:    c.String("netrc.username"),
+			Password: c.String("netrc.password"),
+		},
 	}
 
-	// generate the .hgrc file
-	if err := writeHgrc(w); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return err
-	}
-
-	var cmds []*exec.Cmd
-	if isDirEmpty(filepath.Join(w.Path, ".hg")) {
-		cmds = append(cmds, initHg())
-	}
-	cmds = append(cmds, pull(r, b))
-	cmds = append(cmds, update(b))
-
-	for _, cmd := range cmds {
-		cmd.Dir = w.Path
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		trace(cmd)
-		err := cmd.Run()
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func initHg() *exec.Cmd {
-	return exec.Command(
-		"hg",
-		"init",
-		".",
-	)
-}
-
-func pull(r *plugin.Repo, b *plugin.Build) *exec.Cmd {
-	return exec.Command(
-		"hg",
-		"pull",
-		"--branch",
-		b.Branch,
-		r.Clone,
-	)
-}
-
-func update(b *plugin.Build) *exec.Cmd {
-	return exec.Command(
-		"hg",
-		"update",
-		b.Commit,
-	)
-}
-
-// Trace writes each command to standard error (preceded by a ‘$ ’) before it
-// is executed. Used for debugging your build.
-func trace(cmd *exec.Cmd) {
-	fmt.Println("$", strings.Join(cmd.Args, " "))
-}
-
-// Writes the hgrc file.
-func writeHgrc(in *plugin.Workspace) error {
-	if in.Netrc == nil || len(in.Netrc.Machine) == 0 {
-		return nil
-	}
-	out := fmt.Sprintf(
-		hgrcFile,
-		in.Netrc.Machine, // TODO this may require adding http(s) prefix
-		in.Netrc.Login,
-		in.Netrc.Password,
-	)
-	home := "/root"
-	u, err := user.Current()
-	if err == nil {
-		home = u.HomeDir
-	}
-
-	path := filepath.Join(home, ".hgrc")
-	return ioutil.WriteFile(path, []byte(out), 0600)
-}
-
-func isDirEmpty(name string) bool {
-	f, err := os.Open(name)
-	if err != nil {
-		return true
-	}
-	defer f.Close()
-
-	_, err = f.Readdir(1)
-	if err == io.EOF {
-		return true
-	}
-	return false
+	return plugin.Exec()
 }
