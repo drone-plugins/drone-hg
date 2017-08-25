@@ -8,6 +8,7 @@ The following is a sample Git clone configuration in your .drone.yml file:
 
 ```yaml
 clone:
-  image: hg
-  path: bitbucket.org/foo/bar
+  hg:
+    image: plugins/drone-hg
+    path: bitbucket.org/foo/bar
 ```
