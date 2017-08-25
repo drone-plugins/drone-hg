@@ -9,5 +9,5 @@ RUN apk update && \
         perl && \
     rm -rf /var/cache/apk/*
 
-ADD drone-hg /bin/
+ADD release/linux/amd64/drone-hg /bin/
 ENTRYPOINT ["/bin/drone-hg"]

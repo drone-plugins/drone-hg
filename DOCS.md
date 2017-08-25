@@ -9,6 +9,6 @@ The following is a sample Git clone configuration in your .drone.yml file:
 ```yaml
 clone:
   hg:
-    image: plugins/drone-hg
+    image: plugins/hg
     path: bitbucket.org/foo/bar
 ```
