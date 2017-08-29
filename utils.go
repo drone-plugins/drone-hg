@@ -15,7 +15,7 @@ const hgrcFile = `
 [auth]
 drone.prefix = %s
 drone.username = %s
-drone.password %s
+drone.password = %s
 drone.schemes = http https
 `
 
@@ -36,7 +36,7 @@ func writeHgrc(machine, login, password string) error {
 	if err == nil {
 		home = u.HomeDir
 	}
-	path := filepath.Join(home, ".netrc")
+	path := filepath.Join(home, ".hgrc")
 	return ioutil.WriteFile(path, []byte(out), 0600)
 }
 
