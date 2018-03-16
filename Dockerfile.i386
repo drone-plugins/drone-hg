@@ -1,4 +1,4 @@
-FROM plugins/base:arm
+FROM plugins/base:i386
 
 LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" \
   org.label-schema.name="Drone Mercurial" \
@@ -7,5 +7,5 @@ LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" \
 
 RUN apk add --no-cache mercurial openssh curl perl
 
-ADD release/linux/arm/drone-hg /bin/
-ENTRYPOINT [ "/bin/drone-hg" ]
+ADD release/linux/i386/drone-hg /bin/
+ENTRYPOINT ["/bin/drone-hg"]
