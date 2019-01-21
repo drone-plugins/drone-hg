@@ -7,7 +7,6 @@
 [![](https://images.microbadger.com/badges/image/plugins/hg.svg)](https://microbadger.com/images/plugins/hg "Get your own image badge on microbadger.com")
 [![Go Doc](https://godoc.org/github.com/drone-plugins/drone-hg?status.svg)](http://godoc.org/github.com/drone-plugins/drone-hg)
 [![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-hg)](https://goreportcard.com/report/github.com/drone-plugins/drone-hg)
-[![](https://images.microbadger.com/badges/image/plugins/hg.svg)](https://microbadger.com/images/plugins/hg "Get your own image badge on microbadger.com")
 
 Drone plugin to clone `mercurial` repositories. For the usage information and a listing of the available options please take a look at [the docs](http://plugins.drone.io/drone-plugins/drone-hg/).
 
