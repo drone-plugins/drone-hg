@@ -8,14 +8,16 @@ import (
 	"github.com/urfave/cli"
 )
 
-var build = "0" // build number set at compile-time
+var (
+	version = "unknown"
+)
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "mercurial plugin"
 	app.Usage = "mercurial plugin"
 	app.Action = run
-	app.Version = fmt.Sprintf("1.0.%s", build)
+	app.Version = version
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "remote",
