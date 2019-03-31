@@ -12,30 +12,62 @@ Drone plugin to clone `mercurial` repositories. For the usage information and a 
 
 ## Build
 
-Build the binary with the following commands:
+Build the binary with the following command:
 
-```
-go build
+```console
+export GOOS=linux
+export GOARCH=amd64
+export CGO_ENABLED=0
+export GO111MODULE=on
+
+go build -v -a -tags netgo -o release/linux/amd64/drone-hg
 ```
 
 ## Docker
 
-Build the Docker image with the following commands:
+Build the Docker image with the following command:
 
-```
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -a -tags netgo -o release/linux/amd64/drone-hg
-docker build --rm -t plugins/hg .
+```console
+docker build \
+  --label org.label-schema.build-date=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+  --label org.label-schema.vcs-ref=$(git rev-parse --short HEAD) \
+  --file docker/Dockerfile.linux.amd64 --tag plugins/hg .
 ```
 
 ## Usage
 
 Clone a commit:
 
-```
+```console
 docker run --rm \
   -e DRONE_REMOTE_URL=https://bitbucket.org/cedk/drone-hg-test \
   -e DRONE_WORKSPACE=/go/src/bitbucket.org/cedk/drone-hg-test \
   -e DRONE_BUILD_EVENT=push \
-  -e DRONE_COMMIT_SHA=37526193d0139f188b20e5c8bed8fc0640c38627 \
+  -e DRONE_COMMIT_SHA=d8dbe4d94f15fe89232e0402c6e8a0ddf21af3ab \
+  -e DRONE_COMMIT_REF=refs/heads/master \
+  plugins/hg
+```
+
+Clone a pull request:
+
+```console
+docker run --rm \
+  -e DRONE_REMOTE_URL=https://bitbucket.org/cedk/drone-hg-test \
+  -e DRONE_WORKSPACE=/go/src/bitbucket.org/cedk/drone-hg-test \
+  -e DRONE_BUILD_EVENT=pull_request \
+  -e DRONE_COMMIT_SHA=3b4642018d177bf5fecc5907e7f341a2b5c12b8a \
+  -e DRONE_COMMIT_REF=refs/pull/74/head \
+  plugins/hg
+```
+
+Clone a tag:
+
+```console
+docker run --rm \
+  -e DRONE_REMOTE_URL=https://bitbucket.org/cedk/drone-hg-test \
+  -e DRONE_WORKSPACE=/go/src/bitbucket.org/cedk/drone-hg-test \
+  -e DRONE_BUILD_EVENT=tag \
+  -e DRONE_COMMIT_SHA=3b4642018d177bf5fecc5907e7f341a2b5c12b8a \
+  -e DRONE_COMMIT_REF=refs/tags/74/head \
   plugins/hg
 ```
