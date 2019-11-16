@@ -19,17 +19,24 @@ drone.password = %s
 drone.schemes = http https
 `
 
+const shareConf = `
+[extensions]
+hgext.share =
+[share]
+pool = %s
+`
+
 // helper function to write a hgrc file.
 func writeHgrc(machine, login, password string) error {
-	if machine == "" {
-		return nil
+	out := ""
+	if machine != "" {
+		out = fmt.Sprintf(
+			hgrcFile,
+			machine,
+			login,
+			password,
+		)
 	}
-	out := fmt.Sprintf(
-		hgrcFile,
-		machine,
-		login,
-		password,
-	)
 
 	home := "/root"
 	u, err := user.Current()
@@ -38,6 +45,23 @@ func writeHgrc(machine, login, password string) error {
 	}
 	path := filepath.Join(home, ".hgrc")
 	return ioutil.WriteFile(path, []byte(out), 0600)
+}
+
+func addShare(path string) error {
+	content := fmt.Sprintf(
+		shareConf,
+		path,
+	)
+	return appendHgrc(content)
+}
+
+func appendHgrc(content string) error {
+	file, err := os.OpenFile("/root/.hgrc", os.O_WRONLY|os.O_APPEND, 0600)
+	if err != nil {
+		return err
+	}
+	_, err = file.WriteString(content)
+	return err
 }
 
 // helper function returns true if directory dir is empty.

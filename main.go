@@ -54,6 +54,11 @@ func main() {
 			Usage:  "netrc password",
 			EnvVar: "DRONE_NETRC_PASSWORD",
 		},
+		cli.StringFlag{
+			Name:   "share.pool",
+			Usage:  "pool storage",
+			EnvVar: "HG_SHARE_POOL",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -75,6 +80,9 @@ func run(c *cli.Context) error {
 			Machine:  c.String("netrc.machine"),
 			Login:    c.String("netrc.username"),
 			Password: c.String("netrc.password"),
+		},
+		Share: Share{
+			Pool: c.String("share.pool"),
 		},
 	}
 

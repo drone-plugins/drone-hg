@@ -10,6 +10,7 @@ type Plugin struct {
 	Repo  Repo
 	Build Build
 	Netrc Netrc
+	Share Share
 }
 
 func (p Plugin) Exec() error {
@@ -25,10 +26,17 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
+	if p.Share.Pool != "" {
+		err := addShare(p.Share.Pool)
+		if err != nil {
+			return err
+		}
+	}
+
 	var cmds []*exec.Cmd
 
 	if isDirEmpty(filepath.Join(p.Build.Path, ".hg")) {
-		cmds = append(cmds, initHg())
+		cmds = append(cmds, initHg(p.Repo.Clone))
 	}
 	cmds = append(cmds, pull(p.Build.Commit, p.Repo.Clone))
 	cmds = append(cmds, update(p.Build.Commit))
@@ -47,10 +55,13 @@ func (p Plugin) Exec() error {
 	return nil
 }
 
-func initHg() *exec.Cmd {
+func initHg(path string) *exec.Cmd {
 	return exec.Command(
 		"hg",
-		"init",
+		"clone",
+		"--rev",
+		"null",
+		path,
 		".",
 	)
 }
