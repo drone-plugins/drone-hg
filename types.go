@@ -16,4 +16,8 @@ type (
 		Login    string
 		Password string
 	}
+
+	Share struct {
+		Pool     string
+	}
 )
